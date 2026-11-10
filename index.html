@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fbf8f2">
+    <meta name="description" content="Encontre doulas acolhedoras perto de você e encontre apoio para cada etapa da gestação.">
+    <title>colo — apoio perto de você</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="client.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="colo, início">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M16 26V13m0 7c-5.2 0-8.5-2.7-8.5-7.5 5.2 0 8.5 2.7 8.5 7.5Zm0-4c0-5.2 3.1-8.5 8.5-8.5 0 5.2-3.1 8.5-8.5 8.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>colo<span class="brand-period">.</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Navegação principal">
+        <a class="nav-link active" href="#doulas">Encontrar uma doula</a>
+        <a class="nav-link" href="#como-funciona">Como funciona</a>
+      </nav>
+      <div class="header-actions">
+        <button class="text-button" id="admin-payments-button" type="button" hidden>Pagamentos pendentes</button>
+        <button class="text-button" id="contacts-button" type="button" hidden>Contatos</button>
+        <button class="text-button" id="billing-button" type="button" hidden>Plano e contatos</button>
+        <button class="text-button" id="messages-button" type="button" hidden>Mensagens</button>
+        <button class="text-button" id="my-profile-button" type="button">Meu perfil</button>
+        <button class="button button-dark button-small" id="create-profile-button" type="button">Entrar / cadastrar <span aria-hidden="true">↗</span></button>
+      </div>
+      <button class="menu-button" id="menu-button" type="button" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> Cuidado que começa por perto</div>
+          <h1 id="hero-title">Apoio de verdade,<br>em cada <span>começo.</span></h1>
+          <p>Encontre uma doula que combina com você e viva sua gestação com mais acolhimento, informação e confiança.</p>
+          <a class="hero-link" href="#doulas">Encontre seu apoio <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-art" aria-label="Ilustração de duas pessoas se acolhendo">
+          <div class="art-sun"></div>
+          <div class="art-plant art-plant-left"><i></i><i></i><i></i><b></b></div>
+          <div class="art-plant art-plant-right"><i></i><i></i><i></i><b></b></div>
+          <div class="art-arch">
+            <div class="art-person person-back"><span class="person-hair"></span><span class="person-face"></span><span class="person-body"></span></div>
+            <div class="art-person person-front"><span class="person-hair"></span><span class="person-face"></span><span class="person-body"></span><span class="person-arm"></span></div>
+          </div>
+          <div class="art-note"><span class="note-heart">♡</span><span>Um colo para<br>cada caminho.</span></div>
+          <span class="art-sparkle sparkle-one">✳</span>
+          <span class="art-sparkle sparkle-two">✦</span>
+        </div>
+        <div class="hero-bottom-note"><span class="note-line"></span> Feito com carinho para quem cuida e quem gesta</div>
+      </section>
+
+      <section class="discovery section-wrap" id="doulas" aria-labelledby="discovery-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow eyebrow-muted"><span class="eyebrow-dot"></span> Uma rede de cuidado</div>
+            <h2 id="discovery-title">Doulas perto de você</h2>
+            <p class="section-description">Encontre profissionais por cidade ou bairro e escolha o apoio que combina com você.</p>
+          </div>
+          <div class="result-meta"><span class="live-dot"></span><span id="results-count">Carregando perfis</span></div>
+        </div>
+
+        <form class="search-panel" id="search-form">
+          <label class="search-field location-field">
+            <span class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M19 10.1c0 5.1-7 11-7 11s-7-5.9-7-11a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.3" stroke="currentColor" stroke-width="1.7"/></svg>
+            </span>
+            <span class="search-label">Onde você está?</span>
+            <input id="location-filter" type="search" placeholder="Cidade ou bairro" autocomplete="address-level2">
+          </label>
+          <span class="search-divider" aria-hidden="true"></span>
+          <label class="search-field service-field">
+            <span class="field-icon service-icon" aria-hidden="true">✳</span>
+            <span class="search-label">Que tipo de apoio?</span>
+            <select id="service-filter" aria-label="Filtrar por tipo de apoio">
+              <option value="">Todos os serviços</option>
+              <option value="parto">Acompanhamento no parto</option>
+              <option value="gestacao">Apoio na gestação</option>
+              <option value="pos-parto">Pós-parto e amamentação</option>
+              <option value="online">Atendimento online</option>
+            </select>
+          </label>
+          <button class="button button-coral search-button" type="submit"><span aria-hidden="true">⌕</span> Buscar</button>
+        </form>
+
+        <div class="listing-toolbar">
+          <span class="nearby-label"><span aria-hidden="true">⌖</span> <span id="location-summary">Doulas para conhecer</span></span>
+          <label class="sort-control">Ordenar por
+            <select id="sort-filter" aria-label="Ordenar perfis">
+              <option value="recommended">Recomendadas</option>
+              <option value="price-low">Menor valor</option>
+              <option value="experience">Mais experiência</option>
+            </select>
+          </label>
+        </div>
+        <div class="doula-grid" id="doula-grid" aria-live="polite"></div>
+        <p class="privacy-note"><span aria-hidden="true">♡</span> Perfis de gestantes e informações da gestação não aparecem nos resultados de busca.</p>
+      </section>
+
+      <section class="how-it-works" id="como-funciona">
+        <div class="how-inner">
+          <div class="how-heading">
+            <div class="eyebrow eyebrow-light"><span class="eyebrow-dot"></span> Simples como deve ser</div>
+            <h2>Um encontro pode<br>mudar tudo.</h2>
+            <p>Um primeiro passo para uma jornada mais leve e acompanhada.</p>
+          </div>
+          <div class="steps">
+            <article class="step">
+              <span class="step-number">01</span>
+              <span class="step-icon" aria-hidden="true">⌖</span>
+              <h3>Descubra</h3>
+              <p>Encontre profissionais e conheça os serviços oferecidos perto de você.</p>
+            </article>
+            <article class="step">
+              <span class="step-number">02</span>
+              <span class="step-icon" aria-hidden="true">♡</span>
+              <h3>Conecte-se</h3>
+              <p>Leia cada perfil com calma e escolha quem faz sentido para sua jornada.</p>
+            </article>
+            <article class="step">
+              <span class="step-number">03</span>
+              <span class="step-icon" aria-hidden="true">✳</span>
+              <h3>Caminhe junto</h3>
+              <p>Compartilhe um pouco da sua história e comece uma rede de cuidado.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="#"><span class="brand-mark" aria-hidden="true">✳</span><span>colo<span class="brand-period">.</span></span></a>
+      <p>Um espaço de cuidado, encontro e novos começos.</p>
+      <span class="footer-note">Feito para cuidar ♡</span>
+    </footer>
+
+    <dialog class="profile-dialog" id="profile-dialog" aria-labelledby="profile-dialog-title">
+      <div class="dialog-shell">
+        <button class="dialog-close" type="button" aria-label="Fechar" data-close-dialog>×</button>
+        <div id="profile-dialog-content"></div>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
