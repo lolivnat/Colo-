@@ -109,6 +109,14 @@ test("health check and homepage are served by the application", async () => {
   const homepage = await fetch(baseUrl);
   assert.equal(homepage.status, 200);
   assert.match(await homepage.text(), /colodoula|doulas perto de você/i);
+
+  const stylesheet = await fetch(`${baseUrl}/styles.css`);
+  assert.equal(stylesheet.status, 200);
+  assert.match(stylesheet.headers.get("content-type"), /text\/css/);
+
+  const script = await fetch(`${baseUrl}/client.js`);
+  assert.equal(script.status, 200);
+  assert.match(script.headers.get("content-type"), /javascript/);
 });
 
 test("registration creates a persistent login session and login rejects incorrect passwords", async () => {
@@ -274,6 +282,12 @@ test("receipt upload never unlocks contacts before admin confirms the payment", 
     type: "image/png"
   });
   assert.equal(invalidImage.response.status, 400);
+
+  const oversizedImage = await uploadReceipt(doula.cookie, {
+    data: Buffer.alloc(4 * 1024 * 1024 + 1),
+    type: "image/png"
+  });
+  assert.equal(oversizedImage.response.status, 413);
 
   const upload = await uploadReceipt(doula.cookie);
   assert.equal(upload.response.status, 201);

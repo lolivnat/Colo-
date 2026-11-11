@@ -18,6 +18,25 @@ Aplicação web para conectar doulas e gestantes. Inclui cadastro e login, perfi
 
 Ao iniciar, o serviço cria as tabelas necessárias se elas ainda não existirem. Não são inseridos perfis ou avaliações fictícias.
 
+## Publicar na Vercel
+
+1. Importe o repositório `lolivnat/Colo-` na Vercel. O `index.js` exporta o app Express para execução como Function; os arquivos da pasta `public/` são publicados como assets estáticos.
+2. Crie um PostgreSQL externo, por exemplo no Neon, de preferência na mesma região da Function. Use a URL de conexão com pooler fornecida pelo provedor.
+3. Configure estas variáveis em **Settings → Environment Variables**:
+
+- `NODE_ENV=production`
+- `APP_ORIGIN`: origem HTTPS do deployment Vercel, sem caminho final
+- `DATABASE_URL`: URL de conexão pooled do PostgreSQL
+- `DATABASE_SSL=true` se exigido pelo provedor
+- `TRUST_PROXY=true`
+- `ADMIN_EMAILS`: e-mails da equipe, separados por vírgula
+- `PAYMENT_CHECKOUT_URL`: checkout HTTPS do plano Padrão
+- `PREMIUM_PAYMENT_CHECKOUT_URL`: checkout HTTPS do plano Premium
+
+4. Faça o deploy. O schema é aplicado no primeiro acesso, com trava transacional para evitar inicializações concorrentes. Configure os valores de pagamento e confirme-os no provedor antes de ativar os planos.
+
+As Functions da Vercel limitam o corpo de cada requisição a 4,5 MB; por isso, os comprovantes aceitam imagens de até 4 MB. O limitador de tentativas de login/cadastro usa memória do processo, que não é compartilhada entre Functions. Antes de abrir o serviço ao público, configure um rate limit compartilhado para produção.
+
 ## Publicar em Render e conectar colodoula.com
 
 1. Envie este repositório ao seu GitHub e, no Render, crie um **Web Service** conectado a ele. Use `npm ci` como comando de build e `npm start` como comando de início.
@@ -45,7 +64,7 @@ Não publique segredos no repositório nem os envie por chat. O cookie de sessã
 - Perfis de doulas ficam fora da busca até que a própria profissional marque a opção para publicá-los. A busca filtra por cidade/bairro, não usa GPS nem calcula distância exata.
 - A área de contatos exige um plano mensal conferido manualmente pela equipe: Padrão por R$ 39,90 ou Premium por R$ 59,90. Ambos liberam 30 dias de acesso; apenas o Premium ativo prioriza o perfil na busca recomendada. O comprovante nunca libera acesso por conta própria. Doulas não pagantes também não conseguem ler ou enviar mensagens.
 - O diretório contém apenas gestantes que, por vontade própria, marcaram a opção de aparecer e a opção separada de compartilhar o e-mail. Mostra somente nome, cidade, bairro e e-mail; dados e preferências da gestação nunca são incluídos. Revogar a autorização remove o contato do diretório.
-- Para analisar comprovantes, cadastre uma conta da equipe e configure seu e-mail em `ADMIN_EMAILS`. A equipe deve conferir o recebimento no provedor de pagamentos antes de aprovar. As imagens aceitas (JPEG, PNG ou WebP, até 5 MB) são guardadas no PostgreSQL somente enquanto estão pendentes e apagadas após a decisão; registros de aprovação e validade do acesso permanecem.
+- Para analisar comprovantes, cadastre uma conta da equipe e configure seu e-mail em `ADMIN_EMAILS`. A equipe deve conferir o recebimento no provedor de pagamentos antes de aprovar. As imagens aceitas (JPEG, PNG ou WebP, até 4 MB) são guardadas no PostgreSQL somente enquanto estão pendentes e apagadas após a decisão; registros de aprovação e validade do acesso permanecem.
 - As contas usam senhas derivadas com scrypt e sessões em cookies `HttpOnly`, `SameSite=Lax`, com tokens aleatórios armazenados como hashes. A API valida a origem das alterações, limita tentativas de login/cadastro e só aceita links de pagamento HTTPS.
 - O limite de tentativas usa armazenamento em memória por processo; se o serviço for escalado para várias instâncias, configure um armazenamento compartilhado de rate limit.
 - Mensagens são privadas entre participantes, mas não têm criptografia ponta a ponta. O colo não processa pagamentos nem recebe dados de cartão; a gestante é direcionada ao link externo informado pela doula.

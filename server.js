@@ -21,7 +21,7 @@ const billingPlans = {
   standard: { amountCents: 3990, environmentVariable: "PAYMENT_CHECKOUT_URL" },
   premium: { amountCents: 5990, environmentVariable: "PREMIUM_PAYMENT_CHECKOUT_URL" }
 };
-const receiptUploadLimitBytes = 5 * 1024 * 1024;
+const receiptUploadLimitBytes = 4 * 1024 * 1024;
 const uploadReceipt = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: receiptUploadLimitBytes, files: 1, fields: 1 }
@@ -253,6 +253,7 @@ export function createApp(pool) {
     response.setHeader("Cache-Control", "no-store");
     next();
   });
+  app.use(express.static(path.join(root, "public")));
 
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -796,10 +797,6 @@ export function createApp(pool) {
     }
   });
 
-  app.get("/", (_request, response) => response.sendFile(path.join(root, "index.html")));
-  app.get("/index.html", (_request, response) => response.sendFile(path.join(root, "index.html")));
-  app.get("/styles.css", (_request, response) => response.sendFile(path.join(root, "styles.css")));
-  app.get("/client.js", (_request, response) => response.sendFile(path.join(root, "client.js")));
   app.use("/api", (_request, response) => response.status(404).json({ error: "Rota não encontrada." }));
   app.use((error, _request, response, _next) => {
     if (response.headersSent) return;
@@ -807,7 +804,7 @@ export function createApp(pool) {
     if (error instanceof multer.MulterError) {
       const status = error.code === "LIMIT_FILE_SIZE" ? 413 : 400;
       const message = error.code === "LIMIT_FILE_SIZE"
-        ? "A imagem do comprovante deve ter até 5 MB."
+        ? "A imagem do comprovante deve ter até 4 MB."
         : "Envie apenas uma imagem válida do comprovante.";
       return response.status(status).json({ error: message });
     }
@@ -816,6 +813,29 @@ export function createApp(pool) {
     response.status(500).json({ error: "Não foi possível concluir a solicitação. Tente novamente." });
   });
   return app;
+}
+
+export async function initializeDatabase(pool, { serialize = false } = {}) {
+  const schema = await readFile(path.join(root, "db", "schema.sql"), "utf8");
+  if (!serialize) {
+    await pool.query(schema);
+    await pool.query("DELETE FROM sessions WHERE expires_at <= now()");
+    return;
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(71940261)");
+    await client.query(schema);
+    await client.query("DELETE FROM sessions WHERE expires_at <= now()");
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => {});
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 async function main() {
@@ -833,8 +853,7 @@ async function main() {
     connectionTimeoutMillis: 5_000
   });
   pool.on("error", (error) => console.error("Erro inesperado no pool do PostgreSQL:", error));
-  await pool.query(await readFile(path.join(root, "db", "schema.sql"), "utf8"));
-  await pool.query("DELETE FROM sessions WHERE expires_at <= now()");
+  await initializeDatabase(pool);
   const app = createApp(pool);
   const port = Number(process.env.PORT || 3000);
   const server = app.listen(port, "0.0.0.0", () => console.log(`colo disponível na porta ${port}`));

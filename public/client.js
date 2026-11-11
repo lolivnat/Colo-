@@ -330,7 +330,7 @@ async function renderBilling() {
       ${billing.canSubmitProof ? `
         <form class="profile-form" id="billing-form">
           <label class="form-field">Plano pago<select name="plan" required><option value="standard" ${billing.plan === "standard" ? "selected" : ""}>Padrão · ${formatCurrency(standardPlan.amountCents)}</option><option value="premium" ${billing.plan === "premium" ? "selected" : ""}>Premium · ${formatCurrency(premiumPlan.amountCents)}</option></select></label>
-          <label class="form-field">Imagem do comprovante (JPEG, PNG ou WebP, até 5 MB)<input name="proof" type="file" accept="image/jpeg,image/png,image/webp" required></label>
+          <label class="form-field">Imagem do comprovante (JPEG, PNG ou WebP, até 4 MB)<input name="proof" type="file" accept="image/jpeg,image/png,image/webp" required></label>
           <p class="form-helper">O comprovante fica visível apenas para a equipe autorizada durante a análise. Não envie documentos pessoais nem dados de cartão.</p>
           <p class="form-error" id="form-error" role="alert" hidden></p>
           <button class="button button-coral profile-submit" type="submit">Enviar para análise</button>
@@ -692,8 +692,8 @@ dialog.addEventListener("submit", async (event) => {
       showError(dialogContent, "Selecione uma imagem do comprovante.");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      showError(dialogContent, "A imagem do comprovante deve ter até 5 MB.");
+    if (file.size > 4 * 1024 * 1024) {
+      showError(dialogContent, "A imagem do comprovante deve ter até 4 MB.");
       return;
     }
     try {
